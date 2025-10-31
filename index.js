@@ -94,7 +94,11 @@ async function run() {
       
       
       
-      
+      app.post('/bids', async (req, res) => {
+          const newBid = req.body
+          const result = await bidsCollection.insertOne(newBid);
+          res.send(result)
+      })
       
 
     // Send a ping to confirm a successful connection
