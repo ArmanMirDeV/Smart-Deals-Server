@@ -31,7 +31,8 @@ async function run() {
 
     const db = client.db("smart_db");
 
-    const productsCollection = db.collection("products");
+      const productsCollection = db.collection("products");
+      const bidsCollection = db.collection('bids')
 
     app.get("/products", async (req, res) => {
       const cursor = productsCollection.find();
@@ -74,6 +75,27 @@ async function run() {
       const result = await productsCollection.deleteOne(query);
       res.send(result);
     });
+      
+      // bids related api
+
+      app.get('/bids', async (req, res) => {
+          
+          const email = req.query.email;
+          const query = {};
+
+          if (email) {
+              query.buyer_email = email;
+          }
+          
+          const cursor = bidsCollection.find(query);
+          const result = await cursor.toArray();
+          res.send(result);
+      })
+      
+      
+      
+      
+      
 
     // Send a ping to confirm a successful connection
 
