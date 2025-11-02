@@ -35,6 +35,9 @@ async function run() {
     const bidsCollection = db.collection("bids");
     const usersCollection = db.collection("users");
 
+
+    // USErs API
+
     app.post("/users", async (req, res) => {
       const newUser = req.body;
 
@@ -53,19 +56,32 @@ async function run() {
      
     });
 
+    // Products APIs
+
     app.get("/products", async (req, res) => {
       const cursor = productsCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
 
-    app.get("/products/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await productsCollection.findOne(query);
+    app.get('/latest-products', async (req, res) => {
+      const cursor = productsCollection.find().sort({created_at: -1}).limit(9);
+      const result = await cursor.toArray();
       res.send(result);
-    });
 
+    })
+
+    app.get('/products/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await productsCollection.findOne(query)
+      res.send(result);
+   })
+
+    
+   
+
+    
     app.post("/products", async (req, res) => {
       const newProduct = req.body;
       const result = await productsCollection.insertOne(newProduct);
@@ -116,6 +132,18 @@ async function run() {
       const result = await bidsCollection.findOne(query);
       res.send(result);
     });
+
+
+
+    app.get("/products/bids/:productId", async (req, res) => {
+      const productId = req.params.productId;
+      const query = { product: productId };
+      const cursor = bidsCollection.find(query).sort({bid_price: -1}); 
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+
 
     app.post("/bids", async (req, res) => {
       const newBid = req.body;
